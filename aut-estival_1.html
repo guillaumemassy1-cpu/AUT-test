@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Le test des usages · en attendant mon retour</title>
+<!-- Police : Cormorant Garamond si présente sur le système, sinon repli serif élégant. Aucune dépendance réseau. -->
+<style>
+  :root{
+    --bg:#17110c;
+    --bg-card:#1e1710;
+    --bg-raised:#241c13;
+    --ink:#ece0cc;
+    --ink-soft:#b7a488;
+    --ink-faint:#8a7860;
+    --line:#3a2e20;
+    --brass:#d2a24c;
+    --brass-bright:#eabf67;
+    --patina:#89a184;
+    --focus:#eabf67;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(120% 90% at 50% -10%, #241a11 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:680px;
+    margin:0 auto;
+    padding:clamp(20px,5vw,56px) clamp(18px,5vw,32px) 64px;
+  }
+
+  /* ---- shared ---- */
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--brass);
+    font-weight:600;
+    margin:0 0 18px;
+  }
+  h1,h2{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-weight:500;
+    line-height:1.06;
+    margin:0;
+    letter-spacing:.005em;
+  }
+  h1{font-size:clamp(34px,7vw,52px);}
+  h2{font-size:clamp(26px,5vw,36px);}
+  .lede{
+    color:var(--ink-soft);
+    font-size:16px;
+    max-width:52ch;
+    margin:16px 0 0;
+  }
+  .rule{height:1px;background:var(--line);border:0;margin:28px 0;}
+
+  .card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:clamp(22px,4vw,34px);
+  }
+
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border-radius:2px;
+    transition:background .18s ease,color .18s ease,border-color .18s ease,transform .08s ease;
+  }
+  button:active{transform:translateY(1px);}
+  .btn-primary{
+    background:var(--brass);
+    color:#1a1206;
+    border:1px solid var(--brass);
+    font-weight:600;
+    font-size:15px;
+    padding:12px 22px;
+    letter-spacing:.01em;
+  }
+  .btn-primary:hover{background:var(--brass-bright);border-color:var(--brass-bright);}
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    font-size:14px;
+    padding:11px 18px;
+  }
+  .btn-ghost:hover{color:var(--ink);border-color:var(--ink-faint);}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+
+  .screen{display:none;}
+  .screen.active{display:block;animation:fade .4s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* ---- accueil ---- */
+  .object-frame{
+    text-align:center;
+    padding:30px 16px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:linear-gradient(180deg,var(--bg-raised),transparent);
+    margin:26px 0;
+  }
+  .object-frame .kicker{
+    font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:12px;
+  }
+  .object-name{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-style:italic;
+    font-weight:500;
+    font-size:clamp(30px,6vw,44px);
+    color:var(--ink);
+    line-height:1.1;
+  }
+  .object-use{color:var(--ink-soft);font-size:15px;margin-top:10px;}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+
+  /* ---- manche ---- */
+  .play-top{
+    display:flex;justify-content:space-between;align-items:baseline;
+    gap:16px;margin-bottom:8px;
+  }
+  .play-object{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-style:italic;font-size:clamp(22px,4.5vw,30px);color:var(--ink);
+  }
+  .timer{
+    font-variant-numeric:tabular-nums;
+    font-size:26px;font-weight:600;color:var(--ink);
+    letter-spacing:.02em;
+  }
+  .timer.low{color:var(--brass-bright);}
+  .play-use{color:var(--ink-faint);font-size:14px;margin:0 0 20px;}
+
+  .entry{display:flex;gap:10px;margin-bottom:8px;}
+  .entry input{
+    flex:1;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:inherit;font-size:16px;
+    padding:13px 14px;border-radius:2px;
+  }
+  .entry input::placeholder{color:var(--ink-faint);}
+  .entry input:focus{border-color:var(--brass);outline:none;}
+
+  .relance{
+    min-height:20px;font-size:13px;color:var(--patina);
+    font-style:italic;margin:0 0 18px;
+    font-family:"Cormorant Garamond",Georgia,serif;font-size:16px;
+  }
+
+  /* ---- tally signature ---- */
+  .tally-block{
+    display:flex;align-items:center;gap:18px;
+    padding:16px 0 4px;border-top:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .tally-count{
+    font-variant-numeric:tabular-nums;
+    font-size:15px;color:var(--ink-soft);letter-spacing:.02em;
+    white-space:nowrap;
+  }
+  .tally-count b{color:var(--ink);font-size:17px;}
+  .tally-marks{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;min-height:40px;}
+  .tally-marks svg line{stroke:var(--brass);stroke-width:2.4;stroke-linecap:round;}
+  .tally-marks svg.fresh line{animation:carve .35s ease;}
+  @keyframes carve{from{opacity:0;stroke-dashoffset:36;}to{opacity:1;stroke-dashoffset:0;}}
+
+  ul.ideas{list-style:none;margin:18px 0 0;padding:0;}
+  ul.ideas li{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:9px 0;border-bottom:1px solid var(--line);font-size:15px;
+  }
+  ul.ideas li span{color:var(--ink);}
+  .del{
+    background:transparent;border:0;color:var(--ink-faint);
+    font-size:18px;line-height:1;padding:2px 6px;
+  }
+  .del:hover{color:var(--brass);}
+
+  .end-row{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;}
+
+  /* ---- bilan ---- */
+  .metrics{display:flex;gap:14px;flex-wrap:wrap;margin:22px 0 6px;}
+  .metric{
+    flex:1 1 150px;background:var(--bg-raised);border:1px solid var(--line);
+    border-radius:2px;padding:18px;
+  }
+  .metric .m-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);}
+  .metric .m-value{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-size:44px;line-height:1;margin-top:6px;color:var(--brass);
+    font-variant-numeric:tabular-nums;
+  }
+  .metric .m-note{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+
+  .cat-intro{color:var(--ink-soft);font-size:15px;margin:26px 0 14px;}
+  .cat-list{list-style:none;margin:0;padding:0;}
+  .cat-item{padding:12px 0;border-bottom:1px solid var(--line);}
+  .cat-idea{font-size:15px;color:var(--ink);margin-bottom:8px;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .chip{
+    background:transparent;border:1px solid var(--line);color:var(--ink-soft);
+    font-size:12px;padding:5px 10px;border-radius:20px;
+  }
+  .chip:hover{border-color:var(--brass);color:var(--ink);}
+  .chip.on{background:var(--brass);color:#1a1206;border-color:var(--brass);font-weight:600;}
+  .chip-input{
+    background:var(--bg-raised);border:1px solid var(--line);color:var(--ink);
+    font-family:inherit;font-size:13px;padding:5px 10px;border-radius:20px;width:130px;
+  }
+  .chip-input:focus{border-color:var(--brass);outline:none;}
+
+  .reflect{
+    margin-top:26px;border-left:2px solid var(--patina);
+    padding:4px 0 4px 18px;
+  }
+  .reflect p{margin:0 0 10px;color:var(--ink-soft);font-size:15px;}
+  .reflect .r-q{
+    font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;
+    font-size:19px;color:var(--ink);
+  }
+
+  .memo{
+    margin-top:26px;background:var(--bg-raised);border:1px solid var(--line);
+    border-radius:2px;padding:20px;
+  }
+  .memo .m-head{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);margin-bottom:10px;}
+  .memo blockquote{
+    margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;
+    line-height:1.35;color:var(--ink);font-style:italic;
+  }
+  .memo .copy-row{margin-top:14px;display:flex;gap:10px;align-items:center;}
+  .copied{color:var(--patina);font-size:13px;}
+
+  footer{margin-top:40px;color:var(--ink-faint);font-size:13px;text-align:center;line-height:1.7;}
+  footer .sig{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:17px;color:var(--ink-soft);}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ ACCUEIL ============ -->
+  <section id="accueil" class="screen active">
+    <p class="eyebrow">Message d'absence · un clin d'œil</p>
+    <h1>Le test des usages</h1>
+    <p class="lede">
+      Je suis loin de ma boîte de réception. En attendant ma réponse, voici un petit exercice de mon terrain de recherche&nbsp;: le test des usages alternatifs de Guilford, une mesure classique de la pensée divergente. Le principe est simple&nbsp;: trouver le plus d'usages inattendus possible pour un objet banal.
+    </p>
+
+    <div class="object-frame">
+      <div class="kicker">Votre objet</div>
+      <div class="object-name" id="acc-name">—</div>
+      <div class="object-use" id="acc-use">—</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="start">Commencer · 2 minutes</button>
+      <button class="btn-ghost" id="reroll">Changer d'objet</button>
+    </div>
+  </section>
+
+  <!-- ============ MANCHE ============ -->
+  <section id="manche" class="screen">
+    <div class="play-top">
+      <div class="play-object" id="play-name">—</div>
+      <div class="timer" id="timer">2:00</div>
+    </div>
+    <p class="play-use" id="play-use">—</p>
+
+    <div class="entry">
+      <input id="idea-input" type="text" autocomplete="off"
+             placeholder="Un usage inattendu, puis Entrée…" aria-label="Nouvel usage" />
+      <button class="btn-primary" id="add-btn">Ajouter</button>
+    </div>
+    <p class="relance" id="relance" aria-live="polite"></p>
+
+    <div class="tally-block">
+      <div class="tally-count" id="tally-count"><b>0</b> idée</div>
+      <div class="tally-marks" id="tally-marks" aria-hidden="true"></div>
+    </div>
+
+    <ul class="ideas" id="ideas-list"></ul>
+
+    <div class="end-row">
+      <button class="btn-primary" id="finish">Terminer et voir le bilan</button>
+    </div>
+  </section>
+
+  <!-- ============ BILAN ============ -->
+  <section id="bilan" class="screen">
+    <p class="eyebrow">Bilan</p>
+    <h2 id="bilan-title">Votre récolte</h2>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="m-label">Fluidité</div>
+        <div class="m-value" id="m-fluid">0</div>
+        <div class="m-note">idées produites</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Flexibilité</div>
+        <div class="m-value" id="m-flex">0</div>
+        <div class="m-note">familles distinctes</div>
+      </div>
+      <div class="metric">
+        <div class="m-label">Amplitude</div>
+        <div class="m-value" id="m-amp">—</div>
+        <div class="m-note">flexibilité / fluidité</div>
+      </div>
+    </div>
+
+    <p class="cat-intro">
+      La fluidité, c'est le nombre d'idées&nbsp;; la flexibilité, leur variété. Rangez chaque idée dans une <em>famille</em> d'usage&nbsp;: deux idées d'une même famille comptent pour une seule catégorie.
+    </p>
+    <ul class="cat-list" id="cat-list"></ul>
+
+    <div class="reflect">
+      <p class="r-q">Et les deux dimensions qu'aucune machine ne juge à votre place&nbsp;?</p>
+      <p><strong style="color:var(--ink)">Originalité.</strong> Relisez votre liste&nbsp;: quelles idées vous surprennent encore, une fois l'élan retombé&nbsp;? Ce sont celles que peu de gens auraient écrites.</p>
+      <p><strong style="color:var(--ink)">Élaboration.</strong> Choisissez-en une seule et détaillez-la en une phrase, en précisant le contexte, le geste, le pourquoi. C'est là que l'idée devient un projet.</p>
+    </div>
+
+    <div class="memo">
+      <div class="m-head">À recopier dans votre réponse, si le cœur vous en dit</div>
+      <blockquote id="memo-text">—</blockquote>
+      <div class="copy-row">
+        <button class="btn-ghost" id="copy-btn">Copier</button>
+        <span class="copied" id="copied" style="display:none">Copié.</span>
+      </div>
+    </div>
+
+    <div class="end-row">
+      <button class="btn-primary" id="again">Un nouvel objet</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="sig">Guillaume Massy</div>
+    absent jusqu'au <span id="date-retour">10 août</span> · réponse à mon retour
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var OBJETS = [
+    {nom:"une capsule de café en aluminium", usage:"contenir une dose de café pour l'expresso",
+     fams:["contenant","bijou / déco","outil","jouet","musique"]},
+    {nom:"un câble de recharge USB-C", usage:"recharger et connecter un appareil",
+     fams:["attache / lien","structure","outil","jeu","déco"]},
+    {nom:"une coque de smartphone en silicone", usage:"protéger un téléphone",
+     fams:["contenant","protection","jouet","outil","déco"]},
+    {nom:"un tote bag en toile", usage:"transporter ses courses",
+     fams:["contenant","vêtement / accessoire","protection","déco","structure"]},
+    {nom:"une gourde inox réutilisable", usage:"contenir et transporter une boisson",
+     fams:["contenant","outil","musique","arme / défense","jouet"]},
+    {nom:"une carte plastique (badge ou bancaire)", usage:"payer ou ouvrir une porte",
+     fams:["outil","gabarit","jeu","structure","déco"]},
+    {nom:"une pince à linge en bois", usage:"suspendre du linge",
+     fams:["outil","jouet","déco","structure","jeu"]},
+    {nom:"un élastique à cheveux", usage:"attacher les cheveux",
+     fams:["attache / lien","jouet","outil","structure","musique"]},
+    {nom:"une brique de lait (Tetra Pak)", usage:"conserver un liquide alimentaire",
+     fams:["contenant","structure","jouet","jardinage","déco"]},
+    {nom:"un boîtier d'écouteurs sans fil", usage:"ranger et recharger des écouteurs",
+     fams:["contenant","déco","jouet","outil","jeu"]}
+  ];
+  var FAMS_GEN = ["contenant","outil","jouet","déco","structure","attache / lien","musique","arme / défense"];
+
+  var RELANCES = [
+    {t:90, msg:"Les évidences d'abord — laissez-les venir sans filtre."},
+    {t:70, msg:"Et si vous changiez complètement de registre ? Passez de l'utile au farfelu."},
+    {t:45, msg:"Regardez la matière : sa forme, son poids, sa souplesse ouvrent d'autres pistes."},
+    {t:25, msg:"Dernier tiers — c'est souvent là que surgissent les idées les plus étonnantes."},
+    {t:10, msg:"Notez tout, même l'absurde. On triera plus tard."}
+  ];
+
+  var TOTAL = 120;
+  var state = { obj:null, ideas:[], timeLeft:TOTAL, timerId:null, running:false, lastRelance:null, cats:{} };
+
+  var $ = function(id){ return document.getElementById(id); };
+  function show(scr){
+    ["accueil","manche","bilan"].forEach(function(s){
+      $(s).classList.toggle("active", s===scr);
+    });
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function pickObject(){
+    var next;
+    do { next = OBJETS[Math.floor(Math.random()*OBJETS.length)]; }
+    while(state.obj && next===state.obj && OBJETS.length>1);
+    state.obj = next;
+    $("acc-name").textContent = capital(next.nom);
+    $("acc-use").textContent = "Usage ordinaire : " + next.usage + ".";
+  }
+  function capital(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+  /* ---- tally rendering (signature) ---- */
+  function renderTally(n){
+    var box = $("tally-marks");
+    box.innerHTML = "";
+    var groups = Math.floor(n/5), rem = n%5;
+    for(var g=0; g<groups; g++){ box.appendChild(makeGroup(5, false)); }
+    if(rem>0){ box.appendChild(makeGroup(rem, false)); }
+    // mark the very last svg as fresh for the carve animation
+    var svgs = box.querySelectorAll("svg");
+    if(svgs.length){ svgs[svgs.length-1].classList.add("fresh"); }
+  }
+  function makeGroup(count, fresh){
+    var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    svg.setAttribute("width","30"); svg.setAttribute("height","38");
+    svg.setAttribute("viewBox","0 0 30 38");
+    var verticals = Math.min(count,4);
+    for(var i=0;i<verticals;i++){
+      var x = 3 + i*6;
+      svg.appendChild(line(x,4,x,34));
+    }
+    if(count===5){ svg.appendChild(line(0,32,27,6)); } // diagonal barré
+    return svg;
+  }
+  function line(x1,y1,x2,y2){
+    var l = document.createElementNS("http://www.w3.org/2000/svg","line");
+    l.setAttribute("x1",x1); l.setAttribute("y1",y1);
+    l.setAttribute("x2",x2); l.setAttribute("y2",y2);
+    return l;
+  }
+
+  function refreshCount(){
+    var n = state.ideas.length;
+    renderTally(n);
+    $("tally-count").innerHTML = "<b>"+n+"</b> idée"+(n>1?"s":"");
+  }
+
+  function renderIdeas(){
+    var ul = $("ideas-list"); ul.innerHTML = "";
+    state.ideas.forEach(function(txt, i){
+      var li = document.createElement("li");
+      var sp = document.createElement("span"); sp.textContent = txt;
+      var b = document.createElement("button");
+      b.className = "del"; b.setAttribute("aria-label","Retirer"); b.innerHTML = "×";
+      b.onclick = function(){ state.ideas.splice(i,1); renderIdeas(); refreshCount(); };
+      li.appendChild(sp); li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  function addIdea(){
+    var inp = $("idea-input");
+    var v = inp.value.trim();
+    if(!v) return;
+    var exists = state.ideas.some(function(x){ return x.toLowerCase()===v.toLowerCase(); });
+    if(exists){ inp.value=""; return; }
+    state.ideas.push(v);
+    inp.value = "";
+    renderIdeas(); refreshCount();
+  }
+
+  /* ---- timer ---- */
+  function fmt(s){ var m=Math.floor(s/60), r=s%60; return m+":"+(r<10?"0":"")+r; }
+  function tick(){
+    state.timeLeft--;
+    $("timer").textContent = fmt(state.timeLeft);
+    if(state.timeLeft<=15) $("timer").classList.add("low");
+    RELANCES.forEach(function(r){
+      if(state.timeLeft===r.t && state.lastRelance!==r.t){
+        $("relance").textContent = r.msg; state.lastRelance = r.t;
+      }
+    });
+    if(state.timeLeft<=0){ endRound(); }
+  }
+  function startRound(){
+    state.ideas = []; state.timeLeft = TOTAL; state.lastRelance = null; state.cats = {};
+    $("timer").textContent = fmt(TOTAL); $("timer").classList.remove("low");
+    $("relance").textContent = "";
+    $("play-name").textContent = capital(state.obj.nom);
+    $("play-use").textContent = "Usage ordinaire : " + state.obj.usage + ".";
+    renderIdeas(); refreshCount();
+    show("manche");
+    $("idea-input").focus();
+    clearInterval(state.timerId);
+    state.timerId = setInterval(tick, 1000);
+    state.running = true;
+  }
+  function endRound(){
+    clearInterval(state.timerId); state.running = false;
+    buildBilan();
+    show("bilan");
+  }
+
+  /* ---- bilan ---- */
+  function buildBilan(){
+    var n = state.ideas.length;
+    $("m-fluid").textContent = n;
+    $("bilan-title").textContent = n===0 ? "Rien de récolté… cette fois" : "Votre récolte";
+    renderCatList();
+    updateFlex();
+    buildMemo();
+  }
+
+  function renderCatList(){
+    var ul = $("cat-list"); ul.innerHTML = "";
+    var fams = state.obj.fams.slice();
+    FAMS_GEN.forEach(function(f){ if(fams.indexOf(f)<0) fams.push(f); });
+
+    state.ideas.forEach(function(txt, i){
+      var li = document.createElement("li"); li.className = "cat-item";
+      var idea = document.createElement("div"); idea.className = "cat-idea"; idea.textContent = txt;
+      var chips = document.createElement("div"); chips.className = "chips";
+
+      fams.forEach(function(f){
+        var c = document.createElement("button");
+        c.className = "chip"; c.textContent = f;
+        c.onclick = function(){ assign(i, f, li); };
+        li.__chips = li.__chips || [];
+        li.__chips.push({el:c, fam:f});
+        chips.appendChild(c);
+      });
+
+      var free = document.createElement("input");
+      free.className = "chip-input"; free.type = "text"; free.placeholder = "autre…";
+      free.onchange = function(){
+        var v = free.value.trim();
+        if(v){ assign(i, v.toLowerCase(), li); }
+      };
+      chips.appendChild(free);
+
+      li.appendChild(idea); li.appendChild(chips); ul.appendChild(li);
+    });
+  }
+
+  function assign(i, fam, li){
+    state.cats[i] = fam;
+    if(li.__chips){
+      li.__chips.forEach(function(o){ o.el.classList.toggle("on", o.fam===fam); });
+    }
+    updateFlex();
+    buildMemo();
+  }
+
+  function distinctFams(){
+    var set = {};
+    Object.keys(state.cats).forEach(function(k){
+      var v = state.cats[k]; if(v) set[v.toLowerCase()] = true;
+    });
+    return Object.keys(set).length;
+  }
+
+  function updateFlex(){
+    var flex = distinctFams();
+    var n = state.ideas.length;
+    $("m-flex").textContent = flex;
+    if(n>0 && flex>0){
+      $("m-amp").textContent = (flex/n).toFixed(2).replace(".",",");
+    } else {
+      $("m-amp").textContent = "—";
+    }
+  }
+
+  function buildMemo(){
+    var n = state.ideas.length;
+    var flex = distinctFams();
+    var obj = state.obj ? state.obj.nom : "un objet";
+    var txt;
+    if(n===0){
+      txt = "J'ai regardé " + obj + " pendant deux minutes sans trouver un seul autre usage. Guilford aurait souri. À vous de faire mieux, pendant que Guillaume savoure son été.";
+    } else {
+      var famPart = flex>0 ? (", répartis en " + flex + " famille" + (flex>1?"s":"")) : "";
+      txt = "En deux minutes, j'ai imaginé " + n + " usage" + (n>1?"s":"") +
+            " pour " + obj + famPart + ". À votre tour, pendant que Guillaume est aux abonnés absents.";
+    }
+    $("memo-text").textContent = "« " + txt + " »";
+    state.memoRaw = txt;
+  }
+
+  /* ---- events ---- */
+  $("start").onclick = startRound;
+  $("reroll").onclick = pickObject;
+  $("add-btn").onclick = addIdea;
+  $("idea-input").addEventListener("keydown", function(e){
+    if(e.key==="Enter"){ e.preventDefault(); addIdea(); }
+  });
+  $("finish").onclick = endRound;
+  $("again").onclick = function(){ pickObject(); startRound(); };
+  $("copy-btn").onclick = function(){
+    var t = state.memoRaw || "";
+    navigator.clipboard && navigator.clipboard.writeText(t).then(function(){
+      var c = $("copied"); c.style.display="inline"; setTimeout(function(){ c.style.display="none"; }, 2000);
+    });
+  };
+
+  pickObject();
+})();
+</script>
+</body>
+</html>
