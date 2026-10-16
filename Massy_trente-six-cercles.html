@@ -1,0 +1,340 @@
+<title>Trente-six cercles</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Atkinson+Hyperlegible:wght@400;700&family=Martian+Mono:wght@400;600&display=swap">
+<style>
+/* Layout : un cyanotype. Disque-chronomètre en orbite à gauche du titre, puis la feuille insolée et le carnet ; tout s'empile sous 860px.
+   Choix délibéré d'un seul univers visuel (bleu de Prusse), identique quel que soit le thème de l'hôte. */
+:root{
+  --ground:#123A80; --ground-deep:#0B2A60; --sheet:#174692; --exposed:#F3F6FA; --soft:#B7C8E8;
+  --line:#5677B8; --sun:#F6D365; --coral:#FF9E80; --on-sun:#0B2A60;
+  --pen-blanc:#F4F7FB; --pen-jaune:#F6D365; --pen-corail:#FF9E80;
+  --f-display:"Gloock",Georgia,"Times New Roman",serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--ground);
+  background-image:
+    radial-gradient(120% 90% at 30% 10%,transparent 40%,var(--ground-deep) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color:var(--exposed);font-family:var(--f-body);font-size:16px;line-height:1.55;min-height:100%;
+}
+.wrap{max-width:1160px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:40px}
+.label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:260px minmax(0,1fr);gap:40px;align-items:center}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr);gap:24px}.orbit{justify-self:center;order:2}}
+.orbit{position:relative;width:260px;max-width:100%;aspect-ratio:1/1}
+.orbit svg{width:100%;height:100%;display:block;overflow:visible}
+.ring-text{fill:var(--soft);font-family:var(--f-mono);font-size:10.5px;letter-spacing:.32em;text-transform:uppercase}
+.spin{transform-origin:130px 130px}
+@media (prefers-reduced-motion:no-preference){.spin{animation:spin 60s linear infinite}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.clock{position:absolute;inset:50%;transform:translate(-50%,-50%);width:132px;height:132px;border-radius:50%;border:0;background:transparent;color:var(--exposed);cursor:pointer;display:grid;place-content:center;gap:2px;text-align:center;padding:0}
+.clock:disabled{cursor:default}
+.clock .t{font-family:var(--f-display);font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.clock .s{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sun)}
+.clock.low .t{color:var(--coral)}
+.intro{display:grid;gap:16px;min-width:0;max-width:62ch}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(3rem,9vw,6.4rem);line-height:.88;letter-spacing:-.01em;margin:0}
+h1 span{display:block}
+h1 .hollow{color:transparent;-webkit-text-stroke:1.6px var(--exposed);padding-left:.55em}
+@supports not (-webkit-text-stroke:1px black){h1 .hollow{color:var(--sun)}}
+.lead{font-size:1.14rem;margin:0}
+.intro p{margin:0}
+.soft{color:var(--soft)}
+
+/* Atelier */
+main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:860px){main{grid-template-columns:minmax(0,1fr)}}
+.sheet{background:var(--sheet);padding:14px;display:grid;gap:12px;box-shadow:0 0 0 1px var(--line),10px 12px 0 var(--ground-deep);transform:rotate(-.6deg)}
+@media (prefers-reduced-motion:reduce){.sheet{transform:none}}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tool{font:700 .85rem var(--f-body);color:var(--exposed);background:transparent;border:1px solid var(--line);border-radius:999px;padding:.4rem .8rem;cursor:pointer;display:inline-flex;align-items:center;gap:.45rem}
+.tool:hover{border-color:var(--exposed)}
+.tool[aria-pressed="true"]{background:var(--exposed);color:var(--on-sun);border-color:var(--exposed)}
+:focus-visible{outline:2px solid var(--sun);outline-offset:3px}
+.dot{width:.8rem;height:.8rem;border-radius:50%;display:inline-block;box-shadow:0 0 0 1px var(--ground-deep)}
+canvas{display:block;width:100%;max-width:100%;aspect-ratio:1/1;touch-action:none;cursor:crosshair}
+.banner{background:var(--sun);color:var(--on-sun);padding:.6rem .8rem;font-weight:700;margin:0}
+
+.side{display:grid;gap:30px;min-width:0}
+h2{font-family:var(--f-display);font-weight:400;font-size:1.7rem;line-height:1.1;margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:460px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{display:grid;justify-items:center;gap:6px;text-align:center}
+.disc{width:100%;max-width:92px;aspect-ratio:1/1;border-radius:50%;border:1.5px solid var(--exposed);display:grid;place-items:center;font-family:var(--f-display);font-size:2rem;font-variant-numeric:tabular-nums;position:relative}
+.disc.fill{background:conic-gradient(var(--sun) calc(var(--p,0)*1turn),transparent 0);color:var(--exposed)}
+.disc.fill b{background:var(--ground);border-radius:50%;width:74%;aspect-ratio:1/1;display:grid;place-items:center;font-weight:400}
+.stat .label{font-size:.58rem;color:var(--sun)}
+.stat span{font-size:.82rem;line-height:1.25;color:var(--soft)}
+.section{display:grid;gap:12px}
+ol.list{list-style:none;margin:0;padding:0;display:grid;max-height:520px;overflow:auto}
+.row{display:grid;grid-template-columns:3.2rem minmax(0,1fr) minmax(0,9.5rem);gap:10px;align-items:end;padding-block:8px;border-bottom:1px dashed var(--line)}
+@media (max-width:480px){.row{grid-template-columns:2.8rem minmax(0,1fr)}.row select{grid-column:2}}
+.num{font-family:var(--f-mono);font-size:.72rem;color:var(--soft);font-variant-numeric:tabular-nums;padding-bottom:.45rem}
+.num.rare{color:var(--sun)}
+.num.rare::after{content:" ✶"}
+input,select{font:400 1rem var(--f-body);color:var(--exposed);background:transparent;border:0;border-bottom:1px solid var(--soft);padding:.35rem .1rem;width:100%;min-width:0;border-radius:0}
+input::placeholder{color:var(--soft);opacity:.75}
+select{background:var(--ground-deep);border:1px solid var(--line);padding:.35rem .4rem;font-size:.88rem}
+.refs{display:grid;gap:6px;font-size:.84rem;color:var(--soft);max-width:74ch;margin-top:-24px}
+.refs p{margin:0;padding-left:1.5em;text-indent:-1.5em}
+.note{font-size:.84rem;color:var(--soft);max-width:74ch;margin:0;padding-top:18px;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:no-preference){.tool{transition:background .15s,border-color .15s,color .15s}}
+</style>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="orbit">
+      <svg viewBox="0 0 260 260" aria-hidden="true">
+        <defs><path id="orb" d="M130,130 m-112,0 a112,112 0 1,1 224,0 a112,112 0 1,1 -224,0"></path></defs>
+        <g class="spin">
+          <text class="ring-text"><textPath href="#orb">En congé, de retour bientôt, dix minutes de pensée divergente, trente-six cercles,</textPath></text>
+        </g>
+        <circle cx="130" cy="130" r="84" fill="none" stroke="var(--line)" stroke-width="1.5"></circle>
+        <circle id="prog" cx="130" cy="130" r="84" fill="none" stroke="var(--sun)" stroke-width="6" stroke-linecap="round" stroke-dasharray="527.79" stroke-dashoffset="0" transform="rotate(-90 130 130)"></circle>
+      </svg>
+      <button type="button" class="clock" id="start" aria-label="Lancer le chronomètre de dix minutes">
+        <span class="t" id="timer">10:00</span>
+        <span class="s" id="tstate">Lancer</span>
+      </button>
+    </div>
+    <div class="intro">
+      <div class="label">HEP Vaud, UER Art et technologie</div>
+      <h1><span>Trente-six</span><span class="hollow">cercles</span></h1>
+      <p class="lead">Je suis actuellement en congé et je lirai votre message à mon retour. En attendant, je vous propose dix minutes de pensée divergente : transformez le plus de cercles possible en objets ou en images, puis donnez un titre à chacun.</p>
+      <p class="soft">Chaque cercle doit rester l'élément principal du dessin. Tracez à l'intérieur, à l'extérieur, ou réunissez plusieurs cercles dans une même image. Le chronomètre démarre au premier trait.</p>
+      <p class="label">Guillaume Massy, chargé d'enseignement en didactique des ACM</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="sheet" aria-label="Feuille de dessin">
+      <div class="toolbar">
+        <div class="group" role="group" aria-label="Crayon">
+          <button type="button" class="tool" id="pen0" aria-pressed="true"><span class="dot" style="background:var(--pen-blanc)"></span>Blanc</button>
+          <button type="button" class="tool" id="pen1" aria-pressed="false"><span class="dot" style="background:var(--pen-jaune)"></span>Soleil</button>
+          <button type="button" class="tool" id="pen2" aria-pressed="false"><span class="dot" style="background:var(--pen-corail)"></span>Corail</button>
+        </div>
+        <div class="group">
+          <button type="button" class="tool" id="undo">Annuler le trait</button>
+          <button type="button" class="tool" id="reset">Recommencer</button>
+        </div>
+      </div>
+      <p class="banner" id="done" hidden>Les dix minutes sont écoulées. Vous pouvez poursuivre librement, le bilan reste à jour.</p>
+      <canvas id="cv" aria-label="Trente-six cercles à transformer en dessins"></canvas>
+    </section>
+
+    <aside class="side">
+      <section class="section" aria-labelledby="h-bilan">
+        <h2 id="h-bilan">Ce que révèlent vos cercles</h2>
+        <div class="stats">
+          <div class="stat"><div class="disc fill" id="dFlu"><b id="sFlu">0</b></div><div class="label">Fluidité</div><span>cercles transformés sur 36</span></div>
+          <div class="stat"><div class="disc"><b id="sFlex" style="font-weight:400">0</b></div><div class="label">Flexibilité</div><span>catégories différentes</span></div>
+          <div class="stat"><div class="disc"><b id="sOri" style="font-weight:400">0</b></div><div class="label">Originalité</div><span>idées peu fréquentes</span></div>
+          <div class="stat"><div class="disc"><b id="sCombi" style="font-weight:400">0</b></div><div class="label">Combinaison</div><span>cercles réunis en une image</span></div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="h-carnet">
+        <h2 id="h-carnet">Carnet des titres</h2>
+        <p class="soft" id="empty">Chaque cercle que vous transformez vient s'inscrire ici, prêt à recevoir un titre et une catégorie. Les idées peu fréquentes reçoivent une étoile.</p>
+        <ol class="list" id="list"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <p class="note">Activité inspirée des épreuves figuratives de pensée divergente d'E. Paul Torrance. Il ne s'agit ni d'une passation standardisée ni d'une évaluation. L'originalité est estimée à partir d'une courte liste indicative de réponses fréquentes, sans norme statistique. Rien n'est enregistré ni transmis : vos dessins restent dans votre navigateur.</p>
+  <div class="refs">
+    <div class="label">Références</div>
+    <p>Torrance, E. P. (1966). <i>Torrance Tests of Creative Thinking: Norms-technical manual</i> (Research ed.). Personnel Press.</p>
+    <p>Torrance, E. P. (2008). <i>The Torrance Tests of Creative Thinking: Norms-technical manual, figural (streamlined) forms A &amp; B</i>. Scholastic Testing Service.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var N=6, S=600, CELL=S/N, DUR=600000, CIRC=527.79;
+  // Grille régulière de cercles identiques, comme dans l'activité originale
+  var circles=[];
+  for(var r=0;r<N;r++)for(var c=0;c<N;c++){
+    circles.push({x:c*CELL+CELL/2,y:r*CELL+CELL/2,r:40});
+  }
+  var PENS=["--pen-blanc","--pen-jaune","--pen-corail"];
+  var CATS=[["","Catégorie"],["nature","Nature et astres"],["corps","Corps et visages"],["animal","Animaux"],["objet","Objets du quotidien"],["nourriture","Nourriture"],["transport","Transports"],["jeu","Jeux et sports"],["symbole","Symboles et signes"],["autre","Autre"]];
+  var FREQ=["soleil","visage","smiley","emoji","tete","horloge","montre","pendule","ballon","balle","roue","pneu","pizza","lune","bouton","oeil","yeux","assiette","cookie","biscuit","donut","beignet","planete","terre","fleur","bonhomme","pomme","orange","citron","lunette","velo","voiture","cible","coccinelle","bulle","cd","disque","piece","monnaie","pastille","sucette","cerise","boussole"];
+
+  var cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+  var strokes=[], cur=null, pen=0, focusIdx=-1, usedKey="", raf=0;
+  var titles={}, cats={};
+  var state="idle", t0=0;
+  var colors={};
+  function tok(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+  function readColors(){["--exposed","--soft","--sun","--line"].concat(PENS).forEach(function(n){colors[n]=tok(n);});}
+
+  function resize(){
+    var w=cv.getBoundingClientRect().width, dpr=window.devicePixelRatio||1;
+    var px=Math.max(1,Math.round(w*dpr));
+    if(cv.width!==px){cv.width=px;cv.height=px;}
+    render();
+  }
+  function usedSet(){var s={};strokes.forEach(function(st){(st.c||[]).forEach(function(i){s[i]=1;});});return s;}
+  function wobble(c,extra){
+    ctx.beginPath();
+    ctx.arc(c.x,c.y,c.r+extra,0,Math.PI*2);
+  }
+  function render(){
+    raf=0;
+    var k=cv.width/S;
+    ctx.setTransform(k,0,0,k,0,0);
+    ctx.clearRect(0,0,S,S);
+    var used=usedSet();
+    ctx.font="400 9px "+tok("--f-mono");
+    ctx.textAlign="left";
+    circles.forEach(function(c,i){
+      if(i===focusIdx){wobble(c,7);ctx.strokeStyle=colors["--sun"];ctx.lineWidth=4;ctx.stroke();}
+      wobble(c,0);
+      ctx.strokeStyle=colors["--exposed"];ctx.globalAlpha=used[i]?.95:.6;ctx.lineWidth=1.7;ctx.stroke();
+      ctx.globalAlpha=1;
+      ctx.fillStyle=used[i]?colors["--sun"]:colors["--soft"];
+      ctx.fillText(String(i+1),c.x+c.r*.72+3,c.y-c.r*.72-2);
+    });
+    ctx.lineCap="round";ctx.lineJoin="round";
+    strokes.forEach(function(st){
+      var col=colors[PENS[st.pen]];
+      ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=3;
+      if(st.pts.length===1){ctx.beginPath();ctx.arc(st.pts[0][0],st.pts[0][1],1.8,0,Math.PI*2);ctx.fill();return;}
+      ctx.beginPath();ctx.moveTo(st.pts[0][0],st.pts[0][1]);
+      for(var j=1;j<st.pts.length;j++)ctx.lineTo(st.pts[j][0],st.pts[j][1]);
+      ctx.stroke();
+    });
+  }
+  function schedule(){if(!raf)raf=requestAnimationFrame(render);}
+  function pt(e){var b=cv.getBoundingClientRect();return [(e.clientX-b.left)/b.width*S,(e.clientY-b.top)/b.height*S];}
+  function touched(st){
+    var s={};
+    st.pts.forEach(function(p){
+      var best=-1,bd=1e9;
+      for(var i=0;i<circles.length;i++){var d=Math.hypot(p[0]-circles[i].x,p[1]-circles[i].y);if(d<bd){bd=d;best=i;}}
+      if(best>=0&&bd<circles[best].r+12)s[best]=1;
+    });
+    return Object.keys(s).map(Number).sort(function(a,b){return a-b;});
+  }
+
+  cv.addEventListener("pointerdown",function(e){
+    if(e.button>0)return;
+    e.preventDefault();
+    try{cv.setPointerCapture(e.pointerId);}catch(_){}
+    cur={pen:pen,pts:[pt(e)]};strokes.push(cur);
+    if(state==="idle")start();
+    schedule();
+  });
+  cv.addEventListener("pointermove",function(e){
+    if(!cur)return;
+    var evs=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+    if(!evs.length)evs=[e];
+    evs.forEach(function(ev){cur.pts.push(pt(ev));});
+    schedule();
+  });
+  function end(){if(!cur)return;cur.c=touched(cur);cur=null;update();schedule();}
+  cv.addEventListener("pointerup",end);
+  cv.addEventListener("pointercancel",end);
+
+  function norm(s){
+    return s.toLowerCase().replace(/œ/g,"oe").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean)
+      .map(function(w){return w.length>3?w.replace(/[sx]$/,""):w;});
+  }
+  function isFrequent(t){return norm(t).some(function(w){return FREQ.indexOf(w)>=0;});}
+
+  var list=document.getElementById("list"), empty=document.getElementById("empty");
+  function buildList(ids){
+    list.innerHTML="";
+    empty.hidden=ids.length>0;
+    ids.forEach(function(i){
+      var li=document.createElement("li");li.className="row";
+      var n=document.createElement("span");n.className="num";n.id="n-"+i;n.textContent="N° "+(i+1);
+      var inp=document.createElement("input");inp.type="text";inp.id="t-"+i;inp.placeholder="Titre du dessin";inp.value=titles[i]||"";
+      inp.setAttribute("aria-label","Titre du cercle "+(i+1));
+      var sel=document.createElement("select");sel.id="c-"+i;sel.setAttribute("aria-label","Catégorie du cercle "+(i+1));
+      CATS.forEach(function(o){var op=document.createElement("option");op.value=o[0];op.textContent=o[1];sel.appendChild(op);});
+      sel.value=cats[i]||"";
+      inp.addEventListener("input",function(){titles[i]=inp.value;stats();});
+      sel.addEventListener("change",function(){cats[i]=sel.value;stats();});
+      [inp,sel].forEach(function(el){
+        el.addEventListener("focus",function(){focusIdx=i;schedule();});
+        el.addEventListener("blur",function(){focusIdx=-1;schedule();});
+      });
+      li.appendChild(n);li.appendChild(inp);li.appendChild(sel);list.appendChild(li);
+    });
+  }
+  function update(){
+    var ids=Object.keys(usedSet()).map(Number).sort(function(a,b){return a-b;});
+    var key=ids.join(",");
+    if(key!==usedKey){usedKey=key;buildList(ids);}
+    stats();
+  }
+  function stats(){
+    var ids=usedKey&&usedKey!=="#"?usedKey.split(",").map(Number):[];
+    document.getElementById("sFlu").textContent=ids.length;
+    document.getElementById("dFlu").style.setProperty("--p",ids.length/36);
+    var cs={};ids.forEach(function(i){if(cats[i])cs[cats[i]]=1;});
+    document.getElementById("sFlex").textContent=Object.keys(cs).length;
+    var ori=0;
+    ids.forEach(function(i){
+      var t=(titles[i]||"").trim(), n=document.getElementById("n-"+i);
+      var rare=t.length>1&&!isFrequent(t);
+      if(rare)ori++;
+      if(n)n.classList.toggle("rare",rare);
+    });
+    document.getElementById("sOri").textContent=ori;
+    var groups={};
+    strokes.forEach(function(st){if(st.c&&st.c.length>1)st.c.forEach(function(i){groups[i]=1;});});
+    document.getElementById("sCombi").textContent=Object.keys(groups).length;
+  }
+
+  var timerEl=document.getElementById("timer"), tstate=document.getElementById("tstate"), startBtn=document.getElementById("start"), doneEl=document.getElementById("done"), prog=document.getElementById("prog");
+  function fmt(ms){var s=Math.ceil(ms/1000),m=Math.floor(s/60);s=s%60;return m+":"+(s<10?"0":"")+s;}
+  function start(){
+    if(state!=="idle")return;
+    state="running";t0=Date.now();startBtn.disabled=true;tstate.textContent="En cours";
+  }
+  setInterval(function(){
+    if(state!=="running")return;
+    var left=DUR-(Date.now()-t0);
+    if(left<=0){left=0;state="done";doneEl.hidden=false;tstate.textContent="Terminé";}
+    timerEl.textContent=fmt(left);
+    prog.setAttribute("stroke-dashoffset",String(CIRC*(1-left/DUR)));
+    startBtn.classList.toggle("low",left<60000);
+  },250);
+  startBtn.addEventListener("click",start);
+
+  var resetBtn=document.getElementById("reset"), armed=0;
+  resetBtn.addEventListener("click",function(){
+    if(!armed){armed=1;resetBtn.textContent="Confirmer";setTimeout(function(){armed=0;resetBtn.textContent="Recommencer";},3000);return;}
+    armed=0;resetBtn.textContent="Recommencer";
+    strokes=[];titles={};cats={};usedKey="#";state="idle";
+    timerEl.textContent="10:00";startBtn.classList.remove("low");prog.setAttribute("stroke-dashoffset","0");
+    startBtn.disabled=false;tstate.textContent="Lancer";doneEl.hidden=true;
+    update();schedule();
+  });
+
+  document.getElementById("undo").addEventListener("click",function(){strokes.pop();update();schedule();});
+  [0,1,2].forEach(function(k){
+    document.getElementById("pen"+k).addEventListener("click",function(){
+      pen=k;[0,1,2].forEach(function(j){document.getElementById("pen"+j).setAttribute("aria-pressed",j===k?"true":"false");});
+    });
+  });
+
+  readColors();
+  if(window.ResizeObserver)new ResizeObserver(resize).observe(cv); else window.addEventListener("resize",resize);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+  resize();update();
+})();
+</script>
